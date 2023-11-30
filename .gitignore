@@ -1,4 +1,4 @@
 *.pdf
 *.svg
-bin/*
-bin\*
+bin/mynotebook-linux-amd64
+bin/mynotebook-windows-amd64.exe
