@@ -15,7 +15,7 @@ func main() {
 
 	flag.BoolVar(&dot, "dot", false, "draw dots or lines")
 	flag.Float64Var(&spacing, "s", 7.0, "spacing between dots or lines in mm")
-	flag.BoolVar(&centermark, "centermark", false, "draw center dot or line")
+	flag.BoolVar(&centermark, "c", false, "draw center dot or line")
 
 	flag.Parse()
 
