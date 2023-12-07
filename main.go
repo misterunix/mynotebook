@@ -17,6 +17,8 @@ type options struct {
 	dot            bool    // draw dots or lines
 	border         float64 // border in mm
 
+	paperOrientation string // paper orientation
+
 	pageWidth  float64 // page width in mm
 	pageHeight float64 // page height in mm
 
@@ -25,6 +27,8 @@ type options struct {
 	pageMarginRight  float64 // page margin right in mm
 	pageMarginTop    float64 // page margin top in mm
 	pageMarginBottom float64 // page margin bottom in mm
+
+	lineWidth float64 // line width in mm
 
 	file *os.File
 }
@@ -36,6 +40,7 @@ func main() {
 	flag.BoolVar(&Opt.dot, "dot", false, "draw dots or lines")
 	flag.Float64Var(&Opt.spacing, "s", 7.0, "spacing between dots or lines in mm")
 	flag.BoolVar(&Opt.centermark, "c", false, "draw center dot or line")
+	flag.StringVar(&Opt.paperOrientation, "o", "L", "paper orientation. L for landscape, P for portrait")
 
 	flag.Parse()
 
@@ -43,10 +48,12 @@ func main() {
 		Opt.centerSpaceing = Opt.spacing / 2.0
 	}
 
+	Opt.lineWidth = 0.2 // line width in mm
+
 	Opt.pageWidth = 279.4
 	Opt.pageHeight = 215.9
 
-	Opt.margins = 25.4
+	Opt.margins = 25.4 // page margins in mm
 	Opt.pageMarginLeft = Opt.margins
 	Opt.pageMarginRight = Opt.pageWidth - Opt.margins
 	Opt.pageMarginTop = Opt.margins
@@ -65,11 +72,19 @@ func drawLines() {
 	//margin := 25.4
 	//marginHalf := margin / 2.0
 
-	dest := draw2dpdf.NewPdf("L", "mm", "Letter")
+	// create a new PDF surface with a given orientation and a given unit
+	dest := draw2dpdf.NewPdf(Opt.paperOrientation, "mm", "Letter")
+
+	// create a new Graphic context
 	gc := draw2dpdf.NewGraphicContext(dest)
+
 	//gc.SetFillColor(color.RGBA{R: 0x44, G: 0x44, B: 0x44, A: 0xff})
+
+	// set stroke color
 	gc.SetStrokeColor(color.RGBA{R: 0xAA, G: 0xAA, B: 0xAA, A: 0xff})
-	gc.SetLineWidth(.2)
+
+	// set line width
+	gc.SetLineWidth(Opt.lineWidth)
 
 	// base line
 	for y := Opt.pageMarginTop; y < Opt.pageMarginBottom; y += Opt.spacing {
@@ -77,14 +92,19 @@ func drawLines() {
 		gc.LineTo(Opt.pageMarginRight, y)
 		//fmt.Println(Opt.pageMarginLeft, y, Opt.pageMarginRight, y)
 	}
+
+	// close Graphic context
 	gc.Close()
+
+	// fill and stroke
 	gc.FillStroke()
 
 	// center line
 
+	// create a new Graphic context
 	gc = draw2dpdf.NewGraphicContext(dest)
 	gc.SetStrokeColor(color.RGBA{R: 0xCC, G: 0xCC, B: 0xCC, A: 0xff})
-	gc.SetLineWidth(.2)
+	gc.SetLineWidth(Opt.lineWidth) // set line width
 
 	for y := Opt.pageMarginTop; y < Opt.pageMarginBottom; y += Opt.spacing {
 		y1 := y - Opt.centerSpaceing
@@ -92,9 +112,13 @@ func drawLines() {
 		gc.LineTo(Opt.pageMarginRight, y1)
 	}
 
+	// close Graphic context
 	gc.Close()
+
+	// fill and stroke
 	gc.FillStroke()
 
+	// save to file
 	draw2dpdf.SaveToPdfFile("lines.pdf", dest)
 
 	// var err error
