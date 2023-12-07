@@ -11,14 +11,20 @@ import (
 )
 
 type options struct {
-	spacing    float64
-	centermark bool
-	center     float64
-	dot        bool
-	border     float64
+	spacing        float64 // spacing between dots or lines in mm
+	centermark     bool    // draw center dot or line
+	centerSpaceing float64 // center mark spacing
+	dot            bool    // draw dots or lines
+	border         float64 // border in mm
 
-	pageWidth  float64
-	pageHeight float64
+	pageWidth  float64 // page width in mm
+	pageHeight float64 // page height in mm
+
+	margins          float64 // page margins in mm
+	pageMarginLeft   float64 // page margin left in mm
+	pageMarginRight  float64 // page margin right in mm
+	pageMarginTop    float64 // page margin top in mm
+	pageMarginBottom float64 // page margin bottom in mm
 
 	file *os.File
 }
@@ -34,8 +40,17 @@ func main() {
 	flag.Parse()
 
 	if Opt.centermark {
-		Opt.center = Opt.spacing / 2.0
+		Opt.centerSpaceing = Opt.spacing / 2.0
 	}
+
+	Opt.pageWidth = 279.4
+	Opt.pageHeight = 215.9
+
+	Opt.margins = 25.4
+	Opt.pageMarginLeft = Opt.margins
+	Opt.pageMarginRight = Opt.pageWidth - Opt.margins
+	Opt.pageMarginTop = Opt.margins
+	Opt.pageMarginBottom = Opt.pageHeight - Opt.margins
 
 	if Opt.dot {
 		drawDots()
@@ -47,11 +62,8 @@ func main() {
 
 func drawLines() {
 
-	margin := 25.4
+	//margin := 25.4
 	//marginHalf := margin / 2.0
-
-	Opt.pageWidth = 279.4
-	Opt.pageHeight = 215.9
 
 	dest := draw2dpdf.NewPdf("L", "mm", "Letter")
 	gc := draw2dpdf.NewGraphicContext(dest)
@@ -60,11 +72,10 @@ func drawLines() {
 	gc.SetLineWidth(.2)
 
 	// base line
-	for y := margin; y < Opt.pageHeight-margin; y += Opt.spacing {
-		x1 := margin
-		x2 := Opt.pageWidth - margin
-		gc.MoveTo(x1, y)
-		gc.LineTo(x2, y)
+	for y := Opt.pageMarginTop; y < Opt.pageMarginBottom; y += Opt.spacing {
+		gc.MoveTo(Opt.pageMarginLeft, y)
+		gc.LineTo(Opt.pageMarginRight, y)
+		//fmt.Println(Opt.pageMarginLeft, y, Opt.pageMarginRight, y)
 	}
 	gc.Close()
 	gc.FillStroke()
@@ -75,13 +86,10 @@ func drawLines() {
 	gc.SetStrokeColor(color.RGBA{R: 0xCC, G: 0xCC, B: 0xCC, A: 0xff})
 	gc.SetLineWidth(.2)
 
-	for y := margin; y < Opt.pageHeight-margin; y += Opt.spacing {
-		x1 := margin
-		x2 := Opt.pageWidth - margin
-		y1 := y - Opt.spacing/2.0
-
-		gc.MoveTo(x1, y1)
-		gc.LineTo(x2, y1)
+	for y := Opt.pageMarginTop; y < Opt.pageMarginBottom; y += Opt.spacing {
+		y1 := y - Opt.centerSpaceing
+		gc.MoveTo(Opt.pageMarginLeft, y1)
+		gc.LineTo(Opt.pageMarginRight, y1)
 	}
 
 	gc.Close()
@@ -191,8 +199,8 @@ func drawDots() {
 
 			if Opt.centermark {
 				d += "<ellipse style=\"fill:none;stroke:#CCCCCC;stroke-width:0.2\" id=\"path1\" "
-				xx = fmt.Sprintf("%f", x+Opt.center)
-				yy = fmt.Sprintf("%f", y+Opt.center)
+				xx = fmt.Sprintf("%f", x+Opt.centerSpaceing)
+				yy = fmt.Sprintf("%f", y+Opt.centerSpaceing)
 
 				d += "cx=\"" + xx + "\" "
 				d += "cy=\"" + yy + "\" "
