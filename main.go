@@ -4,6 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	"image/color"
+
+	"github.com/llgcode/draw2d/draw2dpdf"
 )
 
 type options struct {
@@ -12,7 +16,11 @@ type options struct {
 	center     float64
 	dot        bool
 	border     float64
-	file       *os.File
+
+	pageWidth  float64
+	pageHeight float64
+
+	file *os.File
 }
 
 var Opt options
@@ -39,53 +47,95 @@ func main() {
 
 func drawLines() {
 
-	var err error
-	baseSVG := "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
-	baseSVG += "<!-- Created with Inkscape (http://www.inkscape.org/) -->\n"
-	baseSVG += "<svg width=\"279.39999mm\" height=\"215.89999mm\"\n"
-	baseSVG += "viewBox=\"0 0 279.39999 215.89999\"\n"
-	baseSVG += "version=\"1.1\" id=\"svg1\" inkscape:version=\"1.3.1 (6036e22fae, 2023-11-19, custom)\"\n"
-	// b+= "sodipodi:docname=\"dot.svg\"\n"
-	//
-	//	xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-	//	xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-	baseSVG += "xmlns=\"http://www.w3.org/2000/svg\"\n"
-	baseSVG += "xmlns:svg=\"http://www.w3.org/2000/svg\">\n"
+	margin := 25.4
+	//marginHalf := margin / 2.0
 
-	c := "<defs\n"
-	c += "id=\"defs1\" />\n"
-	c += "<g\n"
-	c += "inkscape:label=\"Layer 1\"\n"
-	c += "inkscape:groupmode=\"layer\"\n"
-	c += "id=\"layer1\">\n"
+	Opt.pageWidth = 279.4
+	Opt.pageHeight = 215.9
 
-	filename := fmt.Sprintf("svg/lines-%05.2fmm.svg", Opt.spacing)
+	dest := draw2dpdf.NewPdf("L", "mm", "Letter")
+	gc := draw2dpdf.NewGraphicContext(dest)
+	//gc.SetFillColor(color.RGBA{R: 0x44, G: 0x44, B: 0x44, A: 0xff})
+	gc.SetStrokeColor(color.RGBA{R: 0xAA, G: 0xAA, B: 0xAA, A: 0xff})
+	gc.SetLineWidth(.2)
 
-	// file := os.Open("dot1.svg", os.O_CREATE|os.O_WRONLY, 0644)
-	Opt.file, err = os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		panic(err)
+	// base line
+	for y := margin; y < Opt.pageHeight-margin; y += Opt.spacing {
+		x1 := margin
+		x2 := Opt.pageWidth - margin
+		gc.MoveTo(x1, y)
+		gc.LineTo(x2, y)
 	}
-	defer Opt.file.Close()
+	gc.Close()
+	gc.FillStroke()
 
-	Opt.file.WriteString(baseSVG)
-	Opt.file.WriteString(c)
+	// center line
 
-	Opt.border = 25 / 2.0
+	gc = draw2dpdf.NewGraphicContext(dest)
+	gc.SetStrokeColor(color.RGBA{R: 0xCC, G: 0xCC, B: 0xCC, A: 0xff})
+	gc.SetLineWidth(.2)
 
-	xbl := 25.0 - Opt.border
-	xbr := 279.4 - Opt.border
-	yb := 25.0 - Opt.border
+	for y := margin; y < Opt.pageHeight-margin; y += Opt.spacing {
+		x1 := margin
+		x2 := Opt.pageWidth - margin
+		y1 := y - Opt.spacing/2.0
 
-	for y := yb; y < 215-Opt.border; y += Opt.spacing {
-		d := fmt.Sprintf(" <line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"fill:none;stroke:#AAAAAA;stroke-width:0.2\" id=\"path1\" />\n", xbl, y, xbr, y)
-
-		if Opt.centermark {
-			d += fmt.Sprintf(" <line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"fill:none;stroke:#CCCCCC;stroke-width:0.2\" id=\"path1\" />\n", xbl, y+Opt.center, xbr, y+Opt.center)
-		}
-
-		Opt.file.WriteString(d)
+		gc.MoveTo(x1, y1)
+		gc.LineTo(x2, y1)
 	}
+
+	gc.Close()
+	gc.FillStroke()
+
+	draw2dpdf.SaveToPdfFile("lines.pdf", dest)
+
+	// var err error
+	// baseSVG := "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
+	// baseSVG += "<!-- Created with Inkscape (http://www.inkscape.org/) -->\n"
+	// baseSVG += "<svg width=\"279.39999mm\" height=\"215.89999mm\"\n"
+	// baseSVG += "viewBox=\"0 0 279.39999 215.89999\"\n"
+	// baseSVG += "version=\"1.1\" id=\"svg1\" inkscape:version=\"1.3.1 (6036e22fae, 2023-11-19, custom)\"\n"
+	// // b+= "sodipodi:docname=\"dot.svg\"\n"
+	// //
+	// //	xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+	// //	xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+	// baseSVG += "xmlns=\"http://www.w3.org/2000/svg\"\n"
+	// baseSVG += "xmlns:svg=\"http://www.w3.org/2000/svg\">\n"
+
+	// c := "<defs\n"
+	// c += "id=\"defs1\" />\n"
+	// c += "<g\n"
+	// c += "inkscape:label=\"Layer 1\"\n"
+	// c += "inkscape:groupmode=\"layer\"\n"
+	// c += "id=\"layer1\">\n"
+
+	// filename := fmt.Sprintf("svg/lines-%05.2fmm.svg", Opt.spacing)
+
+	// // file := os.Open("dot1.svg", os.O_CREATE|os.O_WRONLY, 0644)
+	// Opt.file, err = os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer Opt.file.Close()
+
+	// Opt.file.WriteString(baseSVG)
+	// Opt.file.WriteString(c)
+
+	// Opt.border = 25 / 2.0
+
+	// xbl := 25.0 - Opt.border
+	// xbr := 279.4 - Opt.border
+	// yb := 25.0 - Opt.border
+
+	// for y := yb; y < 215-Opt.border; y += Opt.spacing {
+	// 	d := fmt.Sprintf(" <line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"fill:none;stroke:#AAAAAA;stroke-width:0.2\" id=\"path1\" />\n", xbl, y, xbr, y)
+
+	// 	if Opt.centermark {
+	// 		d += fmt.Sprintf(" <line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"fill:none;stroke:#CCCCCC;stroke-width:0.2\" id=\"path1\" />\n", xbl, y+Opt.center, xbr, y+Opt.center)
+	// 	}
+
+	// 	Opt.file.WriteString(d)
+	// }
 
 }
 
