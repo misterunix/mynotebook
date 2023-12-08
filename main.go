@@ -100,7 +100,7 @@ func drawLines() {
 	//gc.SetFillColor(color.RGBA{R: 0x44, G: 0x44, B: 0x44, A: 0xff})
 
 	// set stroke color
-	Opt.gc.SetStrokeColor(color.RGBA{R: 0xAA, G: 0xAA, B: 0xAA, A: 0xff})
+	Opt.gc.SetStrokeColor(color.RGBA{R: 0x77, G: 0x77, B: 0x77, A: 0xff})
 
 	// set line width
 	Opt.gc.SetLineWidth(Opt.lineWidth)
@@ -125,8 +125,12 @@ func drawLines() {
 		//Opt.gc = draw2dpdf.NewGraphicContext(Opt.dest)
 		Opt.gc.SetStrokeColor(color.RGBA{R: 0xCC, G: 0xCC, B: 0xCC, A: 0xff})
 		Opt.gc.SetLineWidth(Opt.lineWidth) // set line width
-
+		count := 0
 		for y := Opt.pageMarginTop; y < Opt.pageMarginBottom; y += Opt.spacing {
+			if count == 0 {
+				count++
+				continue
+			}
 			y1 := y - Opt.centerSpaceing
 			Opt.gc.MoveTo(Opt.pageMarginLeft, y1)
 			Opt.gc.LineTo(Opt.pageMarginRight, y1)
