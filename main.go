@@ -7,9 +7,12 @@ import (
 
 	"image/color"
 
+	"github.com/jung-kurt/gofpdf"
 	"github.com/llgcode/draw2d/draw2dpdf"
 )
 
+// going to use bad programming practive and use global variables.
+// All tied to this struct.
 type options struct {
 	spacing        float64 // spacing between dots or lines in mm
 	centermark     bool    // draw center dot or line
@@ -29,6 +32,9 @@ type options struct {
 	pageMarginBottom float64 // page margin bottom in mm
 
 	lineWidth float64 // line width in mm
+
+	dest *gofpdf.Fpdf              // PDF surface
+	gc   *draw2dpdf.GraphicContext // graphic context
 
 	file *os.File
 }
@@ -50,8 +56,17 @@ func main() {
 
 	Opt.lineWidth = 0.2 // line width in mm
 
-	Opt.pageWidth = 279.4
-	Opt.pageHeight = 215.9
+	switch Opt.paperOrientation {
+	case "L":
+		Opt.pageWidth = 279.4
+		Opt.pageHeight = 215.9
+	case "P":
+		Opt.pageWidth = 215.9
+		Opt.pageHeight = 279.4
+	default:
+		fmt.Println("Invalid paper orientation")
+		os.Exit(1)
+	}
 
 	Opt.margins = 25.4 // page margins in mm
 	Opt.pageMarginLeft = Opt.margins
@@ -67,59 +82,65 @@ func main() {
 
 }
 
+// createPDFBase creates a new PDF surface with a given orientation and a given unit
+func createPDFBase() {
+	Opt.dest = draw2dpdf.NewPdf(Opt.paperOrientation, "mm", "Letter")
+}
+
+// create a new Graphic context
+func createGC() {
+	Opt.gc = draw2dpdf.NewGraphicContext(Opt.dest)
+}
+
 func drawLines() {
 
-	//margin := 25.4
-	//marginHalf := margin / 2.0
-
-	// create a new PDF surface with a given orientation and a given unit
-	dest := draw2dpdf.NewPdf(Opt.paperOrientation, "mm", "Letter")
-
-	// create a new Graphic context
-	gc := draw2dpdf.NewGraphicContext(dest)
+	createPDFBase()
+	createGC()
 
 	//gc.SetFillColor(color.RGBA{R: 0x44, G: 0x44, B: 0x44, A: 0xff})
 
 	// set stroke color
-	gc.SetStrokeColor(color.RGBA{R: 0xAA, G: 0xAA, B: 0xAA, A: 0xff})
+	Opt.gc.SetStrokeColor(color.RGBA{R: 0xAA, G: 0xAA, B: 0xAA, A: 0xff})
 
 	// set line width
-	gc.SetLineWidth(Opt.lineWidth)
+	Opt.gc.SetLineWidth(Opt.lineWidth)
 
 	// base line
 	for y := Opt.pageMarginTop; y < Opt.pageMarginBottom; y += Opt.spacing {
-		gc.MoveTo(Opt.pageMarginLeft, y)
-		gc.LineTo(Opt.pageMarginRight, y)
+		Opt.gc.MoveTo(Opt.pageMarginLeft, y)
+		Opt.gc.LineTo(Opt.pageMarginRight, y)
 		//fmt.Println(Opt.pageMarginLeft, y, Opt.pageMarginRight, y)
 	}
 
 	// close Graphic context
-	gc.Close()
+	Opt.gc.Close()
 
 	// fill and stroke
-	gc.FillStroke()
+	Opt.gc.FillStroke()
 
-	// center line
+	// center line if set
+	if Opt.centermark {
+		// create a new Graphic context
+		createGC()
+		//Opt.gc = draw2dpdf.NewGraphicContext(Opt.dest)
+		Opt.gc.SetStrokeColor(color.RGBA{R: 0xCC, G: 0xCC, B: 0xCC, A: 0xff})
+		Opt.gc.SetLineWidth(Opt.lineWidth) // set line width
 
-	// create a new Graphic context
-	gc = draw2dpdf.NewGraphicContext(dest)
-	gc.SetStrokeColor(color.RGBA{R: 0xCC, G: 0xCC, B: 0xCC, A: 0xff})
-	gc.SetLineWidth(Opt.lineWidth) // set line width
+		for y := Opt.pageMarginTop; y < Opt.pageMarginBottom; y += Opt.spacing {
+			y1 := y - Opt.centerSpaceing
+			Opt.gc.MoveTo(Opt.pageMarginLeft, y1)
+			Opt.gc.LineTo(Opt.pageMarginRight, y1)
+		}
 
-	for y := Opt.pageMarginTop; y < Opt.pageMarginBottom; y += Opt.spacing {
-		y1 := y - Opt.centerSpaceing
-		gc.MoveTo(Opt.pageMarginLeft, y1)
-		gc.LineTo(Opt.pageMarginRight, y1)
+		// close Graphic context
+		Opt.gc.Close()
+
+		// fill and stroke
+		Opt.gc.FillStroke()
 	}
 
-	// close Graphic context
-	gc.Close()
-
-	// fill and stroke
-	gc.FillStroke()
-
 	// save to file
-	draw2dpdf.SaveToPdfFile("lines.pdf", dest)
+	draw2dpdf.SaveToPdfFile("lines.pdf", Opt.dest)
 
 	// var err error
 	// baseSVG := "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
