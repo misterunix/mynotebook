@@ -44,6 +44,9 @@ type options struct {
 	filename string // filename
 
 	file *os.File
+
+	darkBlack color.RGBA
+	lightGray color.RGBA
 }
 
 var Opt options
@@ -122,6 +125,9 @@ func main() {
 		fmt.Println("Invalid paper size")
 		os.Exit(1)
 	}
+
+	Opt.darkBlack = color.RGBA{R: 0x00, G: 0x00, B: 0x00, A: 0xff}
+	Opt.lightGray = color.RGBA{R: 0x88, G: 0x88, B: 0x88, A: 0xff}
 
 	os.Mkdir("pdf", 0755)
 	// if Opt.dot {
@@ -307,7 +313,7 @@ func cursivegrid() {
 
 		// ascender line
 		Opt.gc.SetLineWidth(0.5)
-		Opt.gc.SetStrokeColor(color.RGBA{R: 0x88, G: 0x88, B: 0x88, A: 0xff})
+		Opt.gc.SetStrokeColor(Opt.darkBlack)
 		down = Opt.pageMarginTop + pos
 		Opt.gc.MoveTo(Opt.pageMarginLeft, down)
 		Opt.gc.LineTo(Opt.pageMarginRight, down)
@@ -316,7 +322,7 @@ func cursivegrid() {
 
 		// t-d line
 		Opt.gc.SetLineWidth(0.2)
-		Opt.gc.SetStrokeColor(color.RGBA{R: 0xAA, G: 0xAA, B: 0xAA, A: 0xff})
+		Opt.gc.SetStrokeColor(Opt.lightGray)
 		down = Opt.pageMarginTop + pos + Opt.spacing
 
 		Opt.gc.MoveTo(Opt.pageMarginLeft, down)
@@ -337,6 +343,7 @@ func cursivegrid() {
 
 		// base line
 		Opt.gc.SetLineWidth(0.5)
+		Opt.gc.SetStrokeColor(Opt.darkBlack)
 		down = Opt.pageMarginTop + pos + (Opt.spacing * 3)
 
 		Opt.gc.MoveTo(Opt.pageMarginLeft, down)
@@ -347,6 +354,7 @@ func cursivegrid() {
 
 		// descender line
 		Opt.gc.SetLineWidth(0.5)
+		Opt.gc.SetStrokeColor(Opt.darkBlack)
 		down = Opt.pageMarginTop + pos + (Opt.spacing * 5)
 
 		Opt.gc.MoveTo(Opt.pageMarginLeft, down)
