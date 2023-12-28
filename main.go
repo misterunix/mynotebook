@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math"
 	"os"
+	"strings"
 
 	"image/color"
 
@@ -20,6 +22,8 @@ type options struct {
 	dot            bool    // draw dots or lines
 	border         float64 // border in mm
 
+	cursiveunits float64 // units for cursive grid
+
 	paperOrientation string // paper orientation
 
 	pageWidth  float64 // page width in mm
@@ -30,11 +34,14 @@ type options struct {
 	pageMarginRight  float64 // page margin right in mm
 	pageMarginTop    float64 // page margin top in mm
 	pageMarginBottom float64 // page margin bottom in mm
+	paperSize        string  // paper size
 
 	lineWidth float64 // line width in mm
 
 	dest *gofpdf.Fpdf              // PDF surface
 	gc   *draw2dpdf.GraphicContext // graphic context
+
+	filename string // filename
 
 	file *os.File
 }
@@ -43,10 +50,15 @@ var Opt options
 
 func main() {
 
-	flag.BoolVar(&Opt.dot, "dot", false, "draw dots or lines")
+	style := 0
+
+	flag.IntVar(&style, "style", 0, "page style\n  0 - lines\n  1 - dots\n  2 - cursive grid")
+
 	flag.Float64Var(&Opt.spacing, "s", 7.0, "spacing between dots or lines in mm")
 	flag.BoolVar(&Opt.centermark, "c", false, "draw center dot or line")
 	flag.StringVar(&Opt.paperOrientation, "o", "L", "paper orientation. L for landscape, P for portrait")
+	flag.StringVar(&Opt.paperSize, "p", "Letter", "paper size. Letter, A4, etc")
+	flag.Float64Var(&Opt.cursiveunits, "u", 5.0, "units for cursive grid, overrides spacing")
 
 	flag.Parse()
 
@@ -55,36 +67,101 @@ func main() {
 	}
 
 	Opt.lineWidth = 0.2 // line width in mm
-
-	switch Opt.paperOrientation {
-	case "L":
-		Opt.pageWidth = 279.4
-		Opt.pageHeight = 215.9
-	case "P":
-		Opt.pageWidth = 215.9
-		Opt.pageHeight = 279.4
-	default:
-		fmt.Println("Invalid paper orientation")
+	if Opt.paperSize != "" {
+		Opt.paperSize = strings.ToUpper(Opt.paperSize)
+	} else {
+		fmt.Println("Invalid paper size")
 		os.Exit(1)
 	}
 
-	Opt.margins = 25.4 // page margins in mm
+	switch Opt.paperSize {
+	case "LETTER":
+		switch Opt.paperOrientation {
+		case "L":
+			Opt.pageWidth = 279.4
+			Opt.pageHeight = 215.9
+			Opt.margins = 25.4
+		case "P":
+			Opt.pageWidth = 215.9
+			Opt.pageHeight = 279.4
+			Opt.margins = 25.4
+		default:
+			fmt.Println("Invalid paper orientation")
+			os.Exit(1)
+		}
+	case "A4":
+		switch Opt.paperOrientation {
+		case "L":
+			Opt.pageWidth = 297
+			Opt.pageHeight = 210
+			Opt.margins = 25
+		case "P":
+			Opt.pageWidth = 210
+			Opt.pageHeight = 297
+			Opt.margins = 25
+		default:
+			fmt.Println("Invalid paper orientation")
+			os.Exit(1)
+		}
+	case "B5":
+		switch Opt.paperOrientation {
+		case "L":
+			Opt.pageWidth = 250
+			Opt.pageHeight = 176
+			Opt.margins = 20
+		case "P":
+			Opt.pageWidth = 176
+			Opt.pageHeight = 250
+			Opt.margins = 20
+		default:
+			fmt.Println("Invalid paper orientation")
+			os.Exit(1)
+		}
+
+	default:
+		fmt.Println("Invalid paper size")
+		os.Exit(1)
+	}
+
+	os.Mkdir("pdf", 0755)
+	// if Opt.dot {
+	// 	if Opt.centermark {
+	// 		Opt.filename = fmt.Sprintf("pdf/dots-%s-%s-%d-center.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
+	// 	} else {
+	// 		Opt.filename = fmt.Sprintf("pdf/dots-%s-%s-%d.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
+	// 	}
+	// } else {
+	// 	if Opt.centermark {
+	// 		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%d-center.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
+	// 	} else {
+	// 		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%d.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
+	// 	}
+	// }
+
 	Opt.pageMarginLeft = Opt.margins
 	Opt.pageMarginRight = Opt.pageWidth - Opt.margins
 	Opt.pageMarginTop = Opt.margins
 	Opt.pageMarginBottom = Opt.pageHeight - Opt.margins
 
-	if Opt.dot {
-		drawDots()
-	} else {
+	fmt.Printf("%v\n", Opt)
+
+	switch style {
+	case 0:
 		drawLines()
+	case 1:
+		drawDots()
+	case 2:
+		cursivegrid()
+	default:
+		fmt.Println("Invalid style")
+		os.Exit(1)
 	}
 
 }
 
 // createPDFBase creates a new PDF surface with a given orientation and a given unit
 func createPDFBase() {
-	Opt.dest = draw2dpdf.NewPdf(Opt.paperOrientation, "mm", "Letter")
+	Opt.dest = draw2dpdf.NewPdf(Opt.paperOrientation, "mm", Opt.paperSize)
 }
 
 // create a new Graphic context
@@ -93,6 +170,11 @@ func createGC() {
 }
 
 func drawLines() {
+	if Opt.centermark {
+		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%d-center.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
+	} else {
+		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%d.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
+	}
 
 	createPDFBase()
 	createGC()
@@ -122,7 +204,7 @@ func drawLines() {
 	if Opt.centermark {
 		// create a new Graphic context
 		createGC()
-		//Opt.gc = draw2dpdf.NewGraphicContext(Opt.dest)
+
 		Opt.gc.SetStrokeColor(color.RGBA{R: 0xCC, G: 0xCC, B: 0xCC, A: 0xff})
 		Opt.gc.SetLineWidth(Opt.lineWidth) // set line width
 		count := 0
@@ -144,140 +226,144 @@ func drawLines() {
 	}
 
 	// save to file
-	draw2dpdf.SaveToPdfFile("lines.pdf", Opt.dest)
-
-	// var err error
-	// baseSVG := "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
-	// baseSVG += "<!-- Created with Inkscape (http://www.inkscape.org/) -->\n"
-	// baseSVG += "<svg width=\"279.39999mm\" height=\"215.89999mm\"\n"
-	// baseSVG += "viewBox=\"0 0 279.39999 215.89999\"\n"
-	// baseSVG += "version=\"1.1\" id=\"svg1\" inkscape:version=\"1.3.1 (6036e22fae, 2023-11-19, custom)\"\n"
-	// // b+= "sodipodi:docname=\"dot.svg\"\n"
-	// //
-	// //	xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-	// //	xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-	// baseSVG += "xmlns=\"http://www.w3.org/2000/svg\"\n"
-	// baseSVG += "xmlns:svg=\"http://www.w3.org/2000/svg\">\n"
-
-	// c := "<defs\n"
-	// c += "id=\"defs1\" />\n"
-	// c += "<g\n"
-	// c += "inkscape:label=\"Layer 1\"\n"
-	// c += "inkscape:groupmode=\"layer\"\n"
-	// c += "id=\"layer1\">\n"
-
-	// filename := fmt.Sprintf("svg/lines-%05.2fmm.svg", Opt.spacing)
-
-	// // file := os.Open("dot1.svg", os.O_CREATE|os.O_WRONLY, 0644)
-	// Opt.file, err = os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// defer Opt.file.Close()
-
-	// Opt.file.WriteString(baseSVG)
-	// Opt.file.WriteString(c)
-
-	// Opt.border = 25 / 2.0
-
-	// xbl := 25.0 - Opt.border
-	// xbr := 279.4 - Opt.border
-	// yb := 25.0 - Opt.border
-
-	// for y := yb; y < 215-Opt.border; y += Opt.spacing {
-	// 	d := fmt.Sprintf(" <line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"fill:none;stroke:#AAAAAA;stroke-width:0.2\" id=\"path1\" />\n", xbl, y, xbr, y)
-
-	// 	if Opt.centermark {
-	// 		d += fmt.Sprintf(" <line x1=\"%f\" y1=\"%f\" x2=\"%f\" y2=\"%f\" style=\"fill:none;stroke:#CCCCCC;stroke-width:0.2\" id=\"path1\" />\n", xbl, y+Opt.center, xbr, y+Opt.center)
-	// 	}
-
-	// 	Opt.file.WriteString(d)
-	// }
+	draw2dpdf.SaveToPdfFile(Opt.filename, Opt.dest)
 
 }
 
 func drawDots() {
-	var err error
-	baseSVG := "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n"
-	baseSVG += "<!-- Created with Inkscape (http://www.inkscape.org/) -->\n"
-	baseSVG += "<svg width=\"279.39999mm\" height=\"215.89999mm\"\n"
-	baseSVG += "viewBox=\"0 0 279.39999 215.89999\"\n"
-	baseSVG += "version=\"1.1\" id=\"svg1\" inkscape:version=\"1.3.1 (6036e22fae, 2023-11-19, custom)\"\n"
-	// b+= "sodipodi:docname=\"dot.svg\"\n"
-	//
-	//	xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-	//	xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-	baseSVG += "xmlns=\"http://www.w3.org/2000/svg\"\n"
-	baseSVG += "xmlns:svg=\"http://www.w3.org/2000/svg\">\n"
-
-	c := "<defs\n"
-	c += "id=\"defs1\" />\n"
-	c += "<g\n"
-	c += "inkscape:label=\"Layer 1\"\n"
-	c += "inkscape:groupmode=\"layer\"\n"
-	c += "id=\"layer1\">\n"
-
-	filename := fmt.Sprintf("svg/dots-%05.2fmm.svg", Opt.spacing)
-
-	// file := os.Open("dot1.svg", os.O_CREATE|os.O_WRONLY, 0644)
-	Opt.file, err = os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		panic(err)
+	if Opt.centermark {
+		Opt.filename = fmt.Sprintf("pdf/dots-%s-%s-%d-center.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
+	} else {
+		Opt.filename = fmt.Sprintf("pdf/dots-%s-%s-%d.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
 	}
-	defer Opt.file.Close()
 
-	Opt.file.WriteString(baseSVG)
-	Opt.file.WriteString(c)
+	createPDFBase()
+	createGC()
+
+	// set stroke color
+	Opt.gc.SetStrokeColor(color.RGBA{R: 0xaa, G: 0xaa, B: 0xaa, A: 0xff})
+	Opt.gc.SetLineWidth(Opt.lineWidth)
 
 	Opt.border = 25 / 2.0
-
 	xb := 25.0 - Opt.border
 	yb := 25.0 - Opt.border
 
-	for x := xb; x < 279-Opt.border; x += Opt.spacing {
-		for y := yb; y < 215-Opt.border; y += Opt.spacing {
+	for x := xb; x < Opt.pageWidth-Opt.border; x += Opt.spacing {
+		for y := yb; y < Opt.pageHeight-Opt.border; y += Opt.spacing {
 
-			d := "<ellipse style=\"fill:none;stroke:#AAAAAA;stroke-width:0.2\" id=\"path1\" "
-			xx := fmt.Sprintf("%f", x)
-			yy := fmt.Sprintf("%f", y)
-
-			d += "cx=\"" + xx + "\" "
-			d += "cy=\"" + yy + "\" "
-			//cy="5.0"
-			d += "rx=\"0.15\" ry=\"0.15\" />\n"
-
-			if Opt.centermark {
-				d += "<ellipse style=\"fill:none;stroke:#CCCCCC;stroke-width:0.2\" id=\"path1\" "
-				xx = fmt.Sprintf("%f", x+Opt.centerSpaceing)
-				yy = fmt.Sprintf("%f", y+Opt.centerSpaceing)
-
-				d += "cx=\"" + xx + "\" "
-				d += "cy=\"" + yy + "\" "
-				//cy="5.0"
-				d += "rx=\"0.11\" ry=\"0.11\" />\n"
-			}
-			Opt.file.WriteString(d)
+			Opt.gc.MoveTo(x, y)
+			Opt.gc.ArcTo(x, y, 0.15, 0.15, 0, 2*math.Pi)
+			Opt.gc.Close()
 		}
 	}
 
-	// xb = 25 + 25/2.0
-	// yb = 25 + 25/2.0
+	Opt.gc.Close()
+	Opt.gc.FillStroke()
 
-	// for x := xb; x < 279-xb; x += 5 {
-	// 	for y := yb; y < 215-yb; y += 5 {
+	// center line if set
+	if Opt.centermark {
 
-	// 		d := "<ellipse style=\"fill:none;stroke:#BBBBBB;stroke-width:0.3\" id=\"path1\" "
-	// 		xx := fmt.Sprintf("%f", x)
-	// 		yy := fmt.Sprintf("%f", y)
-	// 		d += "cx=\"" + xx + "\" "
-	// 		d += "cy=\"" + yy + "\" "
-	// 		//cy="5.0"
-	// 		d += "rx=\"0.24392819\" ry=\"0.24348988\" />\n"
-	// 		file.WriteString(d)
-	// 	}
-	// }
+		Opt.gc.SetStrokeColor(color.RGBA{R: 0xcc, G: 0xcc, B: 0xcc, A: 0xff})
+		Opt.gc.SetLineWidth(Opt.lineWidth)
+		for x := xb + Opt.spacing; x < Opt.pageWidth-Opt.border; x += Opt.spacing {
+			for y := yb; y < Opt.pageHeight-Opt.border; y += Opt.spacing {
 
-	e := "</g>\n</svg>\n"
-	Opt.file.WriteString(e)
+				Opt.gc.MoveTo(x-(Opt.spacing/2), y-(Opt.spacing/2))
+				Opt.gc.ArcTo(x-(Opt.spacing/2), y-(Opt.spacing/2), 0.15, 0.15, 0, 2*math.Pi)
+				Opt.gc.Close()
+			}
+		}
 
+		Opt.gc.Close()
+		Opt.gc.FillStroke()
+	}
+
+	draw2dpdf.SaveToPdfFile(Opt.filename, Opt.dest)
+
+}
+
+func cursivegrid() {
+
+	Opt.spacing = Opt.cursiveunits
+	Opt.filename = fmt.Sprintf("pdf/cursive-%s-%s-%d-center.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
+
+	createPDFBase()
+	createGC()
+
+	Opt.gc.SetStrokeColor(color.RGBA{R: 0xAA, G: 0xAA, B: 0xAA, A: 0xff})
+
+	// set line width
+	Opt.gc.SetLineWidth(Opt.lineWidth)
+
+	Opt.gc.SetStrokeColor(color.RGBA{R: 0xAA, G: 0xAA, B: 0xAA, A: 0xff})
+
+	// set line width
+	Opt.gc.SetLineWidth(Opt.lineWidth)
+
+	down := 0.0
+	pos := 0.0
+
+	for {
+
+		// ascender line
+		Opt.gc.SetLineWidth(0.5)
+		Opt.gc.SetStrokeColor(color.RGBA{R: 0x88, G: 0x88, B: 0x88, A: 0xff})
+		down = Opt.pageMarginTop + pos
+		Opt.gc.MoveTo(Opt.pageMarginLeft, down)
+		Opt.gc.LineTo(Opt.pageMarginRight, down)
+		Opt.gc.Close()
+		Opt.gc.FillStroke()
+
+		// t-d line
+		Opt.gc.SetLineWidth(0.2)
+		Opt.gc.SetStrokeColor(color.RGBA{R: 0xAA, G: 0xAA, B: 0xAA, A: 0xff})
+		down = Opt.pageMarginTop + pos + Opt.spacing
+
+		Opt.gc.MoveTo(Opt.pageMarginLeft, down)
+		Opt.gc.LineTo(Opt.pageMarginRight, down)
+
+		Opt.gc.Close()
+		Opt.gc.FillStroke()
+
+		// x-height line
+		Opt.gc.SetLineWidth(0.2)
+		down = Opt.pageMarginTop + pos + (Opt.spacing * 2)
+
+		Opt.gc.MoveTo(Opt.pageMarginLeft, down)
+		Opt.gc.LineTo(Opt.pageMarginRight, down)
+
+		Opt.gc.Close()
+		Opt.gc.FillStroke()
+
+		// base line
+		Opt.gc.SetLineWidth(0.5)
+		down = Opt.pageMarginTop + pos + (Opt.spacing * 3)
+
+		Opt.gc.MoveTo(Opt.pageMarginLeft, down)
+		Opt.gc.LineTo(Opt.pageMarginRight, down)
+
+		Opt.gc.Close()
+		Opt.gc.FillStroke()
+
+		// descender line
+		Opt.gc.SetLineWidth(0.5)
+		down = Opt.pageMarginTop + pos + (Opt.spacing * 5)
+
+		Opt.gc.MoveTo(Opt.pageMarginLeft, down)
+		Opt.gc.LineTo(Opt.pageMarginRight, down)
+
+		Opt.gc.Close()
+		Opt.gc.FillStroke()
+
+		pos += (Opt.spacing * 6)
+
+		//fmt.Println(pos, (Opt.pageHeight - Opt.pageMarginBottom))
+
+		if pos > (Opt.pageHeight - Opt.margins) {
+			break
+		}
+
+	}
+
+	draw2dpdf.SaveToPdfFile(Opt.filename, Opt.dest)
 }
