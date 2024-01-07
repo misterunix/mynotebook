@@ -13,6 +13,11 @@ import (
 	"github.com/llgcode/draw2d/draw2dpdf"
 )
 
+type point struct {
+	x float64
+	y float64
+}
+
 // going to use bad programming practive and use global variables.
 // All tied to this struct.
 type options struct {
@@ -175,6 +180,16 @@ func createGC() {
 	Opt.gc = draw2dpdf.NewGraphicContext(Opt.dest)
 }
 
+func drawLine(a point, b point, width float64, linecolor color.RGBA) {
+	createGC()
+	Opt.gc.SetStrokeColor(color.RGBA{R: linecolor.R, G: linecolor.G, B: linecolor.B, A: linecolor.A})
+	Opt.gc.SetLineWidth(width)
+	Opt.gc.MoveTo(a.x, a.y)
+	Opt.gc.LineTo(b.x, b.y)
+	Opt.gc.Close()
+	Opt.gc.FillStroke()
+}
+
 func drawLines() {
 	if Opt.centermark {
 		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%d-center.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
@@ -183,45 +198,35 @@ func drawLines() {
 	}
 
 	createPDFBase()
-	createGC()
 
-	//gc.SetFillColor(color.RGBA{R: 0x44, G: 0x44, B: 0x44, A: 0xff})
-
-	// set stroke color
-	Opt.gc.SetStrokeColor(color.RGBA{R: 0x77, G: 0x77, B: 0x77, A: 0xff})
-
-	// set line width
-	Opt.gc.SetLineWidth(Opt.lineWidth)
-
-	// base line
-	for y := Opt.pageMarginTop; y < Opt.pageMarginBottom; y += Opt.spacing {
-		Opt.gc.MoveTo(Opt.pageMarginLeft, y)
-		Opt.gc.LineTo(Opt.pageMarginRight, y)
-		//fmt.Println(Opt.pageMarginLeft, y, Opt.pageMarginRight, y)
+	for y := Opt.pageMarginTop; y <= Opt.pageMarginBottom; y += Opt.spacing {
+		drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
 	}
 
-	// close Graphic context
-	Opt.gc.Close()
-
-	// fill and stroke
-	Opt.gc.FillStroke()
-
-	// center line if set
 	if Opt.centermark {
-		// create a new Graphic context
+		for y := Opt.pageMarginTop + Opt.centerSpaceing; y <= Opt.pageMarginBottom; y += Opt.spacing {
+			drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.lightGray)
+		}
+	}
+
+	/*
+
+
 		createGC()
 
-		Opt.gc.SetStrokeColor(color.RGBA{R: 0xCC, G: 0xCC, B: 0xCC, A: 0xff})
-		Opt.gc.SetLineWidth(Opt.lineWidth) // set line width
-		count := 0
+		//gc.SetFillColor(color.RGBA{R: 0x44, G: 0x44, B: 0x44, A: 0xff})
+
+		// set stroke color
+		Opt.gc.SetStrokeColor(color.RGBA{R: 0x77, G: 0x77, B: 0x77, A: 0xff})
+
+		// set line width
+		Opt.gc.SetLineWidth(Opt.lineWidth)
+
+		// base line
 		for y := Opt.pageMarginTop; y < Opt.pageMarginBottom; y += Opt.spacing {
-			if count == 0 {
-				count++
-				continue
-			}
-			y1 := y - Opt.centerSpaceing
-			Opt.gc.MoveTo(Opt.pageMarginLeft, y1)
-			Opt.gc.LineTo(Opt.pageMarginRight, y1)
+			Opt.gc.MoveTo(Opt.pageMarginLeft, y)
+			Opt.gc.LineTo(Opt.pageMarginRight, y)
+			//fmt.Println(Opt.pageMarginLeft, y, Opt.pageMarginRight, y)
 		}
 
 		// close Graphic context
@@ -229,8 +234,32 @@ func drawLines() {
 
 		// fill and stroke
 		Opt.gc.FillStroke()
-	}
 
+		// center line if set
+		if Opt.centermark {
+			// create a new Graphic context
+			createGC()
+
+			Opt.gc.SetStrokeColor(color.RGBA{R: 0xCC, G: 0xCC, B: 0xCC, A: 0xff})
+			Opt.gc.SetLineWidth(Opt.lineWidth) // set line width
+			count := 0
+			for y := Opt.pageMarginTop; y < Opt.pageMarginBottom; y += Opt.spacing {
+				if count == 0 {
+					count++
+					continue
+				}
+				y1 := y - Opt.centerSpaceing
+				Opt.gc.MoveTo(Opt.pageMarginLeft, y1)
+				Opt.gc.LineTo(Opt.pageMarginRight, y1)
+			}
+
+			// close Graphic context
+			Opt.gc.Close()
+
+			// fill and stroke
+			Opt.gc.FillStroke()
+		}
+	*/
 	// save to file
 	draw2dpdf.SaveToPdfFile(Opt.filename, Opt.dest)
 
