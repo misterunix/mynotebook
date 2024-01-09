@@ -265,6 +265,16 @@ func drawLines() {
 
 }
 
+func drawDot(a point, radius float64, width float64, linecolor color.RGBA) {
+	createGC()
+	Opt.gc.SetStrokeColor(color.RGBA{R: linecolor.R, G: linecolor.G, B: linecolor.B, A: linecolor.A})
+	Opt.gc.SetLineWidth(width)
+	Opt.gc.MoveTo(a.x, a.y)
+	Opt.gc.ArcTo(a.x, a.y, radius, radius, 0, 2*math.Pi)
+	Opt.gc.Close()
+	Opt.gc.FillStroke()
+}
+
 func drawDots() {
 	if Opt.centermark {
 		Opt.filename = fmt.Sprintf("pdf/dots-%s-%s-%d-center.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
@@ -273,45 +283,64 @@ func drawDots() {
 	}
 
 	createPDFBase()
-	createGC()
 
-	// set stroke color
-	Opt.gc.SetStrokeColor(color.RGBA{R: 0xaa, G: 0xaa, B: 0xaa, A: 0xff})
-	Opt.gc.SetLineWidth(Opt.lineWidth)
+	for y := Opt.pageMarginTop; y <= Opt.pageMarginBottom; y += Opt.spacing {
+		for x := Opt.pageMarginLeft; x <= Opt.pageMarginRight; x += Opt.spacing {
+			drawDot(point{x, y}, 0.15, Opt.lineWidth, Opt.darkBlack)
+		}
+		//drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
+	}
 
-	Opt.border = 25 / 2.0
-	xb := 25.0 - Opt.border
-	yb := 25.0 - Opt.border
-
-	for x := xb; x < Opt.pageWidth-Opt.border; x += Opt.spacing {
-		for y := yb; y < Opt.pageHeight-Opt.border; y += Opt.spacing {
-
-			Opt.gc.MoveTo(x, y)
-			Opt.gc.ArcTo(x, y, 0.15, 0.15, 0, 2*math.Pi)
-			Opt.gc.Close()
+	if Opt.centermark {
+		for y := Opt.pageMarginTop + Opt.centerSpaceing; y <= Opt.pageMarginBottom; y += Opt.spacing {
+			for x := Opt.pageMarginLeft + Opt.centerSpaceing; x <= Opt.pageMarginRight; x += Opt.spacing {
+				s := math.Sin(-12*math.Pi/180) * Opt.spacing
+				drawDot(point{x + s, y}, 0.15, Opt.lineWidth, Opt.lightGray)
+			}
 		}
 	}
 
-	Opt.gc.Close()
-	Opt.gc.FillStroke()
+	/*
 
-	// center line if set
-	if Opt.centermark {
-
-		Opt.gc.SetStrokeColor(color.RGBA{R: 0xcc, G: 0xcc, B: 0xcc, A: 0xff})
+		createGC()
+		// set stroke color
+		Opt.gc.SetStrokeColor(color.RGBA{R: 0xaa, G: 0xaa, B: 0xaa, A: 0xff})
 		Opt.gc.SetLineWidth(Opt.lineWidth)
-		for x := xb + Opt.spacing; x < Opt.pageWidth-Opt.border; x += Opt.spacing {
+
+		Opt.border = 25 / 2.0
+		xb := 25.0 - Opt.border
+		yb := 25.0 - Opt.border
+
+		for x := xb; x < Opt.pageWidth-Opt.border; x += Opt.spacing {
 			for y := yb; y < Opt.pageHeight-Opt.border; y += Opt.spacing {
 
-				Opt.gc.MoveTo(x-(Opt.spacing/2), y-(Opt.spacing/2))
-				Opt.gc.ArcTo(x-(Opt.spacing/2), y-(Opt.spacing/2), 0.15, 0.15, 0, 2*math.Pi)
+				Opt.gc.MoveTo(x, y)
+				Opt.gc.ArcTo(x, y, 0.15, 0.15, 0, 2*math.Pi)
 				Opt.gc.Close()
 			}
 		}
 
 		Opt.gc.Close()
 		Opt.gc.FillStroke()
-	}
+
+		// center line if set
+		if Opt.centermark {
+
+			Opt.gc.SetStrokeColor(color.RGBA{R: 0xcc, G: 0xcc, B: 0xcc, A: 0xff})
+			Opt.gc.SetLineWidth(Opt.lineWidth)
+			for x := xb + Opt.spacing; x < Opt.pageWidth-Opt.border; x += Opt.spacing {
+				for y := yb; y < Opt.pageHeight-Opt.border; y += Opt.spacing {
+
+					Opt.gc.MoveTo(x-(Opt.spacing/2), y-(Opt.spacing/2))
+					Opt.gc.ArcTo(x-(Opt.spacing/2), y-(Opt.spacing/2), 0.15, 0.15, 0, 2*math.Pi)
+					Opt.gc.Close()
+				}
+			}
+
+			Opt.gc.Close()
+			Opt.gc.FillStroke()
+		}
+	*/
 
 	draw2dpdf.SaveToPdfFile(Opt.filename, Opt.dest)
 
