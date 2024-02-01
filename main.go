@@ -26,6 +26,7 @@ type options struct {
 	centerSpaceing float64 // center mark spacing
 	dot            bool    // draw dots or lines
 	border         float64 // border in mm
+	angle          float64 // angle in degrees offset of center mark
 
 	cursiveunits float64 // units for cursive grid
 
@@ -67,7 +68,7 @@ func main() {
 	flag.StringVar(&Opt.paperOrientation, "o", "L", "paper orientation. L for landscape, P for portrait")
 	flag.StringVar(&Opt.paperSize, "p", "Letter", "paper size. Letter, A4, etc")
 	flag.Float64Var(&Opt.cursiveunits, "u", 5.0, "units for cursive grid, overrides spacing")
-
+	flag.Float64Var(&Opt.angle, "a", 0.0, "angle in degrees offset of center mark")
 	flag.Parse()
 
 	if Opt.centermark {
@@ -294,7 +295,8 @@ func drawDots() {
 	if Opt.centermark {
 		for y := Opt.pageMarginTop + Opt.centerSpaceing; y <= Opt.pageMarginBottom; y += Opt.spacing {
 			for x := Opt.pageMarginLeft + Opt.centerSpaceing; x <= Opt.pageMarginRight; x += Opt.spacing {
-				s := math.Sin(-12*math.Pi/180) * Opt.spacing
+				//angle := 0.0 //-12.0
+				s := math.Sin(Opt.angle*math.Pi/180) * Opt.spacing
 				drawDot(point{x + s, y}, 0.15, Opt.lineWidth, Opt.lightGray)
 			}
 		}
