@@ -63,10 +63,10 @@ func main() {
 
 	flag.IntVar(&style, "style", 0, "page style\n  0 - lines\n  1 - dots\n  2 - cursive grid")
 
-	flag.Float64Var(&Opt.spacing, "s", 7.0, "spacing between dots or lines in mm")
+	flag.Float64Var(&Opt.spacing, "sp", 7.0, "spacing between dots or lines in mm")
 	flag.BoolVar(&Opt.centermark, "c", false, "draw center dot or line")
 	flag.StringVar(&Opt.paperOrientation, "o", "L", "paper orientation. L for landscape, P for portrait")
-	flag.StringVar(&Opt.paperSize, "p", "Letter", "paper size. Letter, A4, etc")
+	flag.StringVar(&Opt.paperSize, "ps", "Letter", "paper size. Letter, A4, etc")
 	flag.Float64Var(&Opt.cursiveunits, "u", 5.0, "units for cursive grid, overrides spacing")
 	flag.Float64Var(&Opt.angle, "a", 0.0, "angle in degrees offset of center mark")
 	flag.Parse()
