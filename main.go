@@ -193,9 +193,9 @@ func drawLine(a point, b point, width float64, linecolor color.RGBA) {
 
 func drawLines() {
 	if Opt.centermark {
-		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%d-center.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
+		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%f-center.pdf", Opt.paperSize, Opt.paperOrientation, Opt.spacing)
 	} else {
-		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%d.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
+		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%f.pdf", Opt.paperSize, Opt.paperOrientation, Opt.spacing)
 	}
 
 	createPDFBase()
@@ -278,9 +278,9 @@ func drawDot(a point, radius float64, width float64, linecolor color.RGBA) {
 
 func drawDots() {
 	if Opt.centermark {
-		Opt.filename = fmt.Sprintf("pdf/dots-%s-%s-%d-center.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
+		Opt.filename = fmt.Sprintf("pdf/dots-%s-%s-%f-center.pdf", Opt.paperSize, Opt.paperOrientation, Opt.spacing)
 	} else {
-		Opt.filename = fmt.Sprintf("pdf/dots-%s-%s-%d.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
+		Opt.filename = fmt.Sprintf("pdf/dots-%s-%s-%f.pdf", Opt.paperSize, Opt.paperOrientation, Opt.spacing)
 	}
 
 	createPDFBase()
@@ -351,7 +351,7 @@ func drawDots() {
 func cursivegrid() {
 
 	Opt.spacing = Opt.cursiveunits
-	Opt.filename = fmt.Sprintf("pdf/cursive-%s-%s-%d-center.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
+	Opt.filename = fmt.Sprintf("pdf/cursive-%s-%s-%f-center.pdf", Opt.paperSize, Opt.paperOrientation, Opt.spacing)
 
 	createPDFBase()
 	createGC()
