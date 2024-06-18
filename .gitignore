@@ -2,3 +2,4 @@
 *.svg
 bin/mynotebook-linux-amd64
 bin/mynotebook-windows-amd64.exe
+mynotebook
