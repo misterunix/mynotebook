@@ -21,6 +21,7 @@ type point struct {
 // going to use bad programming practive and use global variables.
 // All tied to this struct.
 type options struct {
+	ladder         bool    // for blackletter 2/4/2/4
 	spacing        float64 // spacing between dots or lines in mm
 	centermark     bool    // draw center dot or line
 	centerSpaceing float64 // center mark spacing
@@ -43,7 +44,7 @@ type options struct {
 	paperSize        string  // paper size
 
 	lineWidth float64 // line width in mm
-
+	//NewDest *gofpdf.Fpdf
 	dest *gofpdf.Fpdf              // PDF surface
 	gc   *draw2dpdf.GraphicContext // graphic context
 
@@ -173,6 +174,7 @@ func main() {
 
 // createPDFBase creates a new PDF surface with a given orientation and a given unit
 func createPDFBase() {
+	//Opt.NewDest := draw2dpdf.NewPdf(Opt.paperOrientation, "mm", Opt.paperSize)
 	Opt.dest = draw2dpdf.NewPdf(Opt.paperOrientation, "mm", Opt.paperSize)
 }
 
