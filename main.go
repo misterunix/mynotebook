@@ -70,6 +70,7 @@ func main() {
 	flag.StringVar(&Opt.paperSize, "ps", "Letter", "paper size. Letter, A4, etc")
 	flag.Float64Var(&Opt.cursiveunits, "u", 5.0, "units for cursive grid, overrides spacing")
 	flag.Float64Var(&Opt.angle, "a", 0.0, "angle in degrees offset of center mark")
+	flag.BoolVar(&Opt.ladder, "l", false, "for blackletter 2/4/2/4")
 	flag.Parse()
 
 	if Opt.centermark {
@@ -201,9 +202,49 @@ func drawLines() {
 	}
 
 	createPDFBase()
-
+	racount := 0
 	for y := Opt.pageMarginTop; y <= Opt.pageMarginBottom; y += Opt.spacing {
-		drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
+		if Opt.ladder {
+
+			switch racount {
+			case 0:
+				drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
+				// gc.BeginPath()
+				// gc.MoveTo(Opt.pageMarginLeft, y)
+
+				racount++
+			case 1:
+				racount++
+			case 2:
+				drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
+				racount++
+			case 3:
+				racount++
+			case 4:
+				racount++
+			case 5:
+				racount++
+			case 6:
+				drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
+				racount++
+			case 7:
+				racount++
+			case 8:
+				drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
+				racount++
+			case 9:
+				racount++
+			case 10:
+				racount++
+			case 11:
+				racount++
+			case 12:
+				racount = 0
+			}
+
+		} else {
+			drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
+		}
 	}
 
 	if Opt.centermark {
