@@ -1,11 +1,9 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"math"
 	"os"
-	"strings"
 
 	"image/color"
 
@@ -62,95 +60,86 @@ func main() {
 
 	style := 0
 
-	flag.IntVar(&style, "style", 0, "page style\n  0 - lines\n  1 - dots\n  2 - cursive grid")
+	// flag.IntVar(&style, "style", 0, "page style\n  0 - lines\n  1 - dots\n  2 - cursive grid")
 
-	flag.Float64Var(&Opt.spacing, "sp", 7.0, "spacing between dots or lines in mm")
-	flag.BoolVar(&Opt.centermark, "c", false, "draw center dot or line")
-	flag.StringVar(&Opt.paperOrientation, "o", "L", "paper orientation. L for landscape, P for portrait")
-	flag.StringVar(&Opt.paperSize, "ps", "Letter", "paper size. Letter, A4, etc")
-	flag.Float64Var(&Opt.cursiveunits, "u", 5.0, "units for cursive grid, overrides spacing")
-	flag.Float64Var(&Opt.angle, "a", 0.0, "angle in degrees offset of center mark")
-	flag.BoolVar(&Opt.ladder, "l", false, "for blackletter 2/4/2/4")
-	flag.Parse()
+	// flag.Float64Var(&Opt.spacing, "sp", 7.0, "spacing between dots or lines in mm")
+	// flag.BoolVar(&Opt.centermark, "c", false, "draw center dot or line")
+	// flag.StringVar(&Opt.paperOrientation, "o", "L", "paper orientation. L for landscape, P for portrait")
+	// flag.StringVar(&Opt.paperSize, "ps", "Letter", "paper size. Letter, A4, etc")
+	// flag.Float64Var(&Opt.cursiveunits, "u", 5.0, "units for cursive grid, overrides spacing")
+	// flag.Float64Var(&Opt.angle, "a", 0.0, "angle in degrees offset of center mark")
+	// flag.BoolVar(&Opt.ladder, "l", false, "for blackletter 2/4/2/4")
+	// flag.Parse()
 
-	if Opt.centermark {
-		Opt.centerSpaceing = Opt.spacing / 2.0
-	}
+	// if Opt.centermark {
+	// 	Opt.centerSpaceing = Opt.spacing / 2.0
+	// }
 
-	Opt.lineWidth = 0.2 // line width in mm
-	if Opt.paperSize != "" {
-		Opt.paperSize = strings.ToUpper(Opt.paperSize)
-	} else {
-		fmt.Println("Invalid paper size")
-		os.Exit(1)
-	}
+	// Opt.lineWidth = 0.2 // line width in mm
+	// if Opt.paperSize != "" {
+	// 	Opt.paperSize = strings.ToUpper(Opt.paperSize)
+	// } else {
+	// 	fmt.Println("Invalid paper size")
+	// 	os.Exit(1)
+	// }
 
-	switch Opt.paperSize {
-	case "LETTER":
-		switch Opt.paperOrientation {
-		case "L":
-			Opt.pageWidth = 279.4
-			Opt.pageHeight = 215.9
-			Opt.margins = 25.4
-		case "P":
-			Opt.pageWidth = 215.9
-			Opt.pageHeight = 279.4
-			Opt.margins = 25.4
-		default:
-			fmt.Println("Invalid paper orientation")
-			os.Exit(1)
-		}
-	case "A4":
-		switch Opt.paperOrientation {
-		case "L":
-			Opt.pageWidth = 297
-			Opt.pageHeight = 210
-			Opt.margins = 25
-		case "P":
-			Opt.pageWidth = 210
-			Opt.pageHeight = 297
-			Opt.margins = 25
-		default:
-			fmt.Println("Invalid paper orientation")
-			os.Exit(1)
-		}
-	case "B5":
-		switch Opt.paperOrientation {
-		case "L":
-			Opt.pageWidth = 250
-			Opt.pageHeight = 176
-			Opt.margins = 20
-		case "P":
-			Opt.pageWidth = 176
-			Opt.pageHeight = 250
-			Opt.margins = 20
-		default:
-			fmt.Println("Invalid paper orientation")
-			os.Exit(1)
-		}
+	Opt.pageWidth = 279.4
+	Opt.pageHeight = 215.9
+	Opt.margins = 25.4
 
-	default:
-		fmt.Println("Invalid paper size")
-		os.Exit(1)
-	}
+	// switch Opt.paperSize {
+	// case "LETTER":
+	// 	switch Opt.paperOrientation {
+	// 	case "L":
+	// 		Opt.pageWidth = 279.4
+	// 		Opt.pageHeight = 215.9
+	// 		Opt.margins = 25.4
+	// 	case "P":
+	// 		Opt.pageWidth = 215.9
+	// 		Opt.pageHeight = 279.4
+	// 		Opt.margins = 25.4
+	// 	default:
+	// 		fmt.Println("Invalid paper orientation")
+	// 		os.Exit(1)
+	// 	}
+	// case "A4":
+	// 	switch Opt.paperOrientation {
+	// 	case "L":
+	// 		Opt.pageWidth = 297
+	// 		Opt.pageHeight = 210
+	// 		Opt.margins = 25
+	// 	case "P":
+	// 		Opt.pageWidth = 210
+	// 		Opt.pageHeight = 297
+	// 		Opt.margins = 25
+	// 	default:
+	// 		fmt.Println("Invalid paper orientation")
+	// 		os.Exit(1)
+	// 	}
+	// case "B5":
+	// 	switch Opt.paperOrientation {
+	// 	case "L":
+	// 		Opt.pageWidth = 250
+	// 		Opt.pageHeight = 176
+	// 		Opt.margins = 20
+	// 	case "P":
+	// 		Opt.pageWidth = 176
+	// 		Opt.pageHeight = 250
+	// 		Opt.margins = 20
+	// 	default:
+	// 		fmt.Println("Invalid paper orientation")
+	// 		os.Exit(1)
+	// 	}
+
+	// default:
+	// 	fmt.Println("Invalid paper size")
+	// 	os.Exit(1)
+	// }
 
 	Opt.darkBlack = color.RGBA{R: 0x00, G: 0x00, B: 0x00, A: 0xff}
 	Opt.lightGray = color.RGBA{R: 0x88, G: 0x88, B: 0x88, A: 0xff}
 
 	os.Mkdir("pdf", 0755)
-	// if Opt.dot {
-	// 	if Opt.centermark {
-	// 		Opt.filename = fmt.Sprintf("pdf/dots-%s-%s-%d-center.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
-	// 	} else {
-	// 		Opt.filename = fmt.Sprintf("pdf/dots-%s-%s-%d.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
-	// 	}
-	// } else {
-	// 	if Opt.centermark {
-	// 		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%d-center.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
-	// 	} else {
-	// 		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%d.pdf", Opt.paperSize, Opt.paperOrientation, int(Opt.spacing))
-	// 	}
-	// }
 
 	Opt.pageMarginLeft = Opt.margins
 	Opt.pageMarginRight = Opt.pageWidth - Opt.margins
@@ -159,17 +148,26 @@ func main() {
 
 	fmt.Printf("%v\n", Opt)
 
-	switch style {
-	case 0:
-		drawLines()
-	case 1:
-		drawDots()
-	case 2:
-		cursivegrid()
-	default:
-		fmt.Println("Invalid style")
-		os.Exit(1)
-	}
+	// switch style {
+	// case 0:
+	// 	drawLines()
+	// case 1:
+	// 	drawDots()
+	// case 2:
+	// 	cursivegrid()
+	// default:
+	// 	fmt.Println("Invalid style")
+	// 	os.Exit(1)
+	// }
+
+	Opt.spacing = 4.5
+	Opt.paperOrientation = "L"
+	Opt.paperSize = "Letter"
+	createPDFBase()
+
+}
+
+func ladder(x, y float64) {
 
 }
 
