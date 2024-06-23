@@ -233,21 +233,22 @@ func drawLadder(x, y float64) {
 
 func drawLines() {
 	if Opt.centermark {
-		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%02.5f-center.pdf", Opt.paperSize, Opt.paperOrientation, Opt.spacing)
+		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%02.3f-center.pdf", Opt.paperSize, Opt.paperOrientation, Opt.spacing)
 	} else {
-		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%02.5f.pdf", Opt.paperSize, Opt.paperOrientation, Opt.spacing)
+		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%02.3f.pdf", Opt.paperSize, Opt.paperOrientation, Opt.spacing)
 	}
 
 	createPDFBase()
-	racount := 0
+	var racount int = 0
 
 	for y := Opt.pageMarginTop; y <= Opt.pageMarginBottom; y += Opt.spacing {
+
 		if Opt.ladder {
 
 			switch racount {
 			case 0:
 				drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
-				drawLadder(Opt.pageMarginLeft, Opt.pageMarginTop)
+				drawLadder(Opt.pageMarginLeft, y)
 				/*
 					Opt.gc.SetFillColor(color.RGBA{0x44, 0x44, 0x44, 0xff})
 					Opt.gc.SetStrokeColor(color.RGBA{0x44, 0x44, 0x44, 0xff})
@@ -282,18 +283,20 @@ func drawLines() {
 				racount++
 			case 8:
 				drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
-				drawLadder(Opt.pageMarginLeft, y)
-				racount++
-			case 9:
-				racount++
-			case 10:
-				drawLadder(Opt.pageMarginLeft, y)
-				racount++
-			case 11:
+				//drawLadder(Opt.pageMarginLeft, y)
+				y = y + (Opt.spacing * 3)
 				racount = 0
-				drawLadder(Opt.pageMarginLeft, y)
-			case 12:
-				racount = 0
+				continue
+				// case 9:
+				// 	racount++
+				// case 10:
+				// 	//drawLadder(Opt.pageMarginLeft, y)
+				// 	racount++
+				// case 11:
+				// 	racount++
+				// 	//drawLadder(Opt.pageMarginLeft, y)
+				// case 12:
+				// 	racount = 0
 			}
 
 		} else {
