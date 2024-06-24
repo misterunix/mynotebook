@@ -196,7 +196,7 @@ func drawLine(a point, b point, width float64, linecolor color.RGBA) {
 
 func drawLadder(x, y float64) {
 	fmt.Println(x, y)
-	for i := 1; i < 12; i = i + 2 { // y drop
+	for i := 1; i <= 2; i = i + 2 { // y drop
 		ym := float64(i) //+ Opt.spacing
 
 		createGC()
@@ -242,6 +242,11 @@ func drawLines() {
 	var racount int = 0
 
 	for y := Opt.pageMarginTop; y <= Opt.pageMarginBottom; y += Opt.spacing {
+
+		// Stop if we are at the bottom of the page
+		if y >= Opt.pageMarginBottom {
+			break
+		}
 
 		if Opt.ladder {
 
