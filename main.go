@@ -243,11 +243,6 @@ func drawLines() {
 
 	for y := Opt.pageMarginTop; y <= Opt.pageMarginBottom; y += Opt.spacing {
 
-		// Stop if we are at the bottom of the page
-		if y >= Opt.pageMarginBottom {
-			break
-		}
-
 		if Opt.ladder {
 
 			switch racount {
