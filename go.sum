@@ -6,5 +6,5 @@ github.com/llgcode/draw2d v0.0.0-20231022063514-1acb54133d2a h1:aP1ySrs3EYBaKOF+
 github.com/llgcode/draw2d v0.0.0-20231022063514-1acb54133d2a/go.mod h1:zNlGqkQNLxAN7D2uihSJsrEzrkWrSIK5kmSZU/dN5NY=
 github.com/llgcode/ps v0.0.0-20150911083025-f1443b32eedb h1:61ndUreYSlWFeCY44JxDDkngVoI7/1MVhEl98Nm0KOk=
 github.com/llgcode/ps v0.0.0-20150911083025-f1443b32eedb/go.mod h1:1l8ky+Ew27CMX29uG+a2hNOKpeNYEQjjtiALiBlFQbY=
-golang.org/x/image v0.14.0 h1:tNgSxAFe3jC4uYqvZdTr84SZoM1KfwdC9SKIFrLjFn4=
-golang.org/x/image v0.14.0/go.mod h1:HUYqC05R2ZcZ3ejNQsIHQDQiwWM4JBqmm6MKANTp4LE=
+golang.org/x/image v0.18.0 h1:jGzIakQa/ZXI1I0Fxvaa9W7yP25TqT6cHIHn+6CqvSQ=
+golang.org/x/image v0.18.0/go.mod h1:4yyo5vMFQjVjUcVk4jEQcU9MGy/rulF5WvUILseCM2E=
