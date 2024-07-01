@@ -91,7 +91,7 @@ func main() {
 		case "L":
 			Opt.pageWidth = 279.4
 			Opt.pageHeight = 215.9
-			Opt.margins = 25.4
+			Opt.margins = 25.4 / 2
 		case "P":
 			Opt.pageWidth = 215.9
 			Opt.pageHeight = 279.4
@@ -184,53 +184,6 @@ func createGC() {
 	Opt.gc = draw2dpdf.NewGraphicContext(Opt.dest)
 }
 
-func drawLine(a point, b point, width float64, linecolor color.RGBA) {
-	createGC()
-	Opt.gc.SetStrokeColor(color.RGBA{R: linecolor.R, G: linecolor.G, B: linecolor.B, A: linecolor.A})
-	Opt.gc.SetLineWidth(width)
-	Opt.gc.MoveTo(a.x, a.y)
-	Opt.gc.LineTo(b.x, b.y)
-	Opt.gc.Close()
-	Opt.gc.FillStroke()
-}
-
-func drawLadder(x, y float64) {
-	fmt.Println(x, y)
-	for i := 1; i <= 2; i = i + 2 { // y drop
-		ym := float64(i) //+ Opt.spacing
-
-		createGC()
-		Opt.gc.SetFillColor(color.RGBA{0x44, 0x44, 0x44, 0xff})
-		Opt.gc.SetStrokeColor(color.RGBA{0x44, 0x44, 0x44, 0xff})
-		Opt.gc.SetLineWidth(0.1)
-		Opt.gc.BeginPath()
-		bx := Opt.pageMarginLeft
-		by := y * ym
-		Opt.gc.MoveTo(bx, by)                              // ul
-		Opt.gc.LineTo(bx+Opt.spacing, by)                  // ur
-		Opt.gc.LineTo(bx+Opt.spacing, (by+Opt.spacing)*ym) // lr
-		Opt.gc.LineTo(bx, (by+Opt.spacing)*ym)             // lr
-		Opt.gc.Close()
-		Opt.gc.FillStroke()
-
-		createGC()
-		Opt.gc.SetFillColor(color.RGBA{0x44, 0x44, 0x44, 0xff})
-		Opt.gc.SetStrokeColor(color.RGBA{0x44, 0x44, 0x44, 0xff})
-		Opt.gc.SetLineWidth(0.1)
-		Opt.gc.BeginPath()
-		bx = Opt.pageMarginLeft + Opt.spacing
-		by = (y + Opt.spacing) * ym
-		Opt.gc.MoveTo(bx, by)                         // ul
-		Opt.gc.LineTo(bx+Opt.spacing, by)             // ur
-		Opt.gc.LineTo(bx+Opt.spacing, by+Opt.spacing) // lr
-		Opt.gc.LineTo(bx, by+Opt.spacing)             // lr
-		Opt.gc.Close()
-		Opt.gc.FillStroke()
-
-	}
-
-}
-
 func drawLines() {
 	if Opt.centermark {
 		Opt.filename = fmt.Sprintf("pdf/lines-%s-%s-%02.3f-center.pdf", Opt.paperSize, Opt.paperOrientation, Opt.spacing)
@@ -239,69 +192,9 @@ func drawLines() {
 	}
 
 	createPDFBase()
-	var racount int = 0
 
-	for y := Opt.pageMarginTop; y <= Opt.pageMarginBottom; y += Opt.spacing {
-
-		if Opt.ladder {
-
-			switch racount {
-			case 0:
-				drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
-				drawLadder(Opt.pageMarginLeft, y)
-				/*
-					Opt.gc.SetFillColor(color.RGBA{0x44, 0x44, 0x44, 0xff})
-					Opt.gc.SetStrokeColor(color.RGBA{0x44, 0x44, 0x44, 0xff})
-
-					Opt.gc.BeginPath()
-					Opt.gc.MoveTo(Opt.pageMarginLeft, y)
-					Opt.gc.LineTo(Opt.pageMarginLeft+4.5, y)
-					Opt.gc.LineTo(Opt.pageMarginLeft+4.5, y+4.5)
-					Opt.gc.LineTo(Opt.pageMarginLeft, y+4.5)
-					Opt.gc.Close()
-					Opt.gc.FillStroke()
-				*/
-				racount++
-			case 1:
-				racount++
-			case 2:
-				drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
-				drawLadder(Opt.pageMarginLeft, y)
-				racount++
-			case 3:
-				racount++
-			case 4:
-				drawLadder(Opt.pageMarginLeft, y)
-				racount++
-			case 5:
-				racount++
-			case 6:
-				drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
-				drawLadder(Opt.pageMarginLeft, y)
-				racount++
-			case 7:
-				racount++
-			case 8:
-				drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
-				//drawLadder(Opt.pageMarginLeft, y)
-				y = y + (Opt.spacing * 3)
-				racount = 0
-				continue
-				// case 9:
-				// 	racount++
-				// case 10:
-				// 	//drawLadder(Opt.pageMarginLeft, y)
-				// 	racount++
-				// case 11:
-				// 	racount++
-				// 	//drawLadder(Opt.pageMarginLeft, y)
-				// case 12:
-				// 	racount = 0
-			}
-
-		} else {
-			drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
-		}
+	if Opt.ladder {
+		drawLadderLineGroup()
 	}
 
 	if Opt.centermark {
