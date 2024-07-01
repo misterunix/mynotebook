@@ -48,17 +48,31 @@ func drawLadderLines(yPos float64) {
 
 	y := yPos
 	// everything is in units of spacing
+
+	// top ascender
 	drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
+
+	// mid ascender
+	drawLine(point{Opt.pageMarginLeft, y + Opt.spacing}, point{Opt.pageMarginRight, y + Opt.spacing}, Opt.lineWidth, Opt.lightGray)
+	drawLadder(Opt.pageMarginLeft, y)
+	y = y + (Opt.spacing * 2)
+
+	// top x-height
+	drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
+
+	// 1 down from x-height
+	drawLine(point{Opt.pageMarginLeft, y + Opt.spacing}, point{Opt.pageMarginRight, y + Opt.spacing}, Opt.lineWidth, Opt.lightGray)
+	drawLine(point{Opt.pageMarginLeft, y + Opt.spacing*2}, point{Opt.pageMarginRight, y + Opt.spacing*2}, Opt.lineWidth, Opt.lightGray)
+	drawLadder(Opt.pageMarginLeft, y)
+
+	drawLine(point{Opt.pageMarginLeft, y + Opt.spacing}, point{Opt.pageMarginRight, y + Opt.spacing}, Opt.lineWidth, Opt.lightGray)
+	y = y + (Opt.spacing * 2)
+	drawLine(point{Opt.pageMarginLeft, y + Opt.spacing}, point{Opt.pageMarginRight, y + Opt.spacing}, Opt.lineWidth, Opt.lightGray)
 	drawLadder(Opt.pageMarginLeft, y)
 	y = y + (Opt.spacing * 2)
 
 	drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
-	drawLadder(Opt.pageMarginLeft, y)
-	y = y + (Opt.spacing * 2)
-	drawLadder(Opt.pageMarginLeft, y)
-	y = y + (Opt.spacing * 2)
-
-	drawLine(point{Opt.pageMarginLeft, y}, point{Opt.pageMarginRight, y}, Opt.lineWidth, Opt.darkBlack)
+	drawLine(point{Opt.pageMarginLeft, y + Opt.spacing}, point{Opt.pageMarginRight, y + Opt.spacing}, Opt.lineWidth, Opt.lightGray)
 	drawLadder(Opt.pageMarginLeft, y)
 	y = y + (Opt.spacing * 2)
 
