@@ -37,6 +37,7 @@ type options struct {
 	pageHeight float64 // page height in mm
 
 	margins          float64 // page margins in mm
+	lrmargin         float64 // left and right margin
 	pageMarginLeft   float64 // page margin left in mm
 	pageMarginRight  float64 // page margin right in mm
 	pageMarginTop    float64 // page margin top in mm
@@ -73,6 +74,8 @@ func main() {
 	flag.BoolVar(&Opt.ladder, "l", false, "for blackletter 2/4/2/4")
 	flag.Parse()
 
+	Opt.lrmargin = 12.7
+
 	if Opt.centermark {
 		Opt.centerSpaceing = Opt.spacing / 2.0
 	}
@@ -91,11 +94,11 @@ func main() {
 		case "L":
 			Opt.pageWidth = 279.4
 			Opt.pageHeight = 215.9
-			Opt.margins = 25.4 / 2
+			Opt.margins = Opt.lrmargin / 2
 		case "P":
 			Opt.pageWidth = 215.9
 			Opt.pageHeight = 279.4
-			Opt.margins = 25.4
+			Opt.margins = Opt.lrmargin
 		default:
 			fmt.Println("Invalid paper orientation")
 			os.Exit(1)
@@ -105,11 +108,11 @@ func main() {
 		case "L":
 			Opt.pageWidth = 297
 			Opt.pageHeight = 210
-			Opt.margins = 25
+			Opt.margins = Opt.lrmargin
 		case "P":
 			Opt.pageWidth = 210
 			Opt.pageHeight = 297
-			Opt.margins = 25
+			Opt.margins = Opt.lrmargin
 		default:
 			fmt.Println("Invalid paper orientation")
 			os.Exit(1)
@@ -119,11 +122,11 @@ func main() {
 		case "L":
 			Opt.pageWidth = 250
 			Opt.pageHeight = 176
-			Opt.margins = 20
+			Opt.margins = Opt.lrmargin
 		case "P":
 			Opt.pageWidth = 176
 			Opt.pageHeight = 250
-			Opt.margins = 20
+			Opt.margins = Opt.lrmargin
 		default:
 			fmt.Println("Invalid paper orientation")
 			os.Exit(1)
@@ -135,7 +138,7 @@ func main() {
 	}
 
 	Opt.darkBlack = color.RGBA{R: 0x00, G: 0x00, B: 0x00, A: 0xff}
-	Opt.lightGray = color.RGBA{R: 0x88, G: 0x88, B: 0x88, A: 0xff}
+	Opt.lightGray = color.RGBA{R: 0xaa, G: 0xaa, B: 0xaa, A: 0xff}
 
 	os.Mkdir("pdf", 0755)
 	// if Opt.dot {
