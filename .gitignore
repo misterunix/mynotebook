@@ -1,5 +1,7 @@
-*.pdf
+cmd/app/mynotebook/linux-amd64/*
+pdftests/*
+
+
 *.svg
-bin/mynotebook-linux-amd64
-bin/mynotebook-windows-amd64.exe
-mynotebook
+
+!*.md

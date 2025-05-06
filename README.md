@@ -1,6 +1,5 @@
-Working on making my own journal notebooks.
+# mynotebook
 
-I write with many types of pens thus I want to try different types of lines, grids and so on.
+Hopefully useful for making pages for notebooks and templates for calligraphy.
 
-
-Its ugly but working.
+Moving code to standard layout to make it easier to share changes.
