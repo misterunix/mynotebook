@@ -5,7 +5,7 @@ import (
 	"mynotebook/internal/common"
 )
 
-func drawLine(a point, b point, width float64, linecolor color.RGBA) {
+func DrawLine(a common.Point, b common.Point, width float64, linecolor color.RGBA) {
 	CreateGC()
 	common.Opt.GC.SetStrokeColor(color.RGBA{R: linecolor.R, G: linecolor.G, B: linecolor.B, A: linecolor.A})
 	common.Opt.GC.SetLineWidth(width)

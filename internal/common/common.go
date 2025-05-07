@@ -8,9 +8,9 @@ import (
 	"github.com/llgcode/draw2d/draw2dpdf"
 )
 
-type point struct {
-	x float64
-	y float64
+type Point struct {
+	X float64
+	Y float64
 }
 
 // going to use bad programming practive and use global variables.

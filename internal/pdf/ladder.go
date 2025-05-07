@@ -53,33 +53,33 @@ func drawLadderLines(yPos float64) {
 	// everything is in units of spacing
 
 	// top ascender
-	drawLine(point{common.Opt.PageMarginLeft, y}, point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
+	DrawLine(common.Point{common.Opt.PageMarginLeft, y}, common.Point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
 
 	// mid ascender
-	drawLine(point{common.Opt.PageMarginLeft, y + common.Opt.Spacing}, point{common.Opt.PageMarginRight, y + common.Opt.Spacing}, common.Opt.lineWidth, common.Opt.lightGray)
+	DrawLine(common.Point{common.Opt.PageMarginLeft, y + common.Opt.Spacing}, common.Point{common.Opt.PageMarginRight, y + common.Opt.Spacing}, common.Opt.lineWidth, common.Opt.lightGray)
 	drawLadder(common.Opt.PageMarginLeft, y)
 	y = y + (common.Opt.Spacing * 2)
 
 	// top x-height
-	drawLine(point{common.Opt.PageMarginLeft, y}, point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
+	DrawLine(common.Point{common.Opt.PageMarginLeft, y}, common.Point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
 
 	// 1 down from x-height
-	drawLine(point{common.Opt.PageMarginLeft, y + common.Opt.Spacing}, point{common.Opt.PageMarginRight, y + common.Opt.Spacing}, common.Opt.lineWidth, common.Opt.lightGray)
-	drawLine(point{common.Opt.PageMarginLeft, y + common.Opt.Spacing*2}, point{common.Opt.PageMarginRight, y + common.Opt.Spacing*2}, common.Opt.lineWidth, common.Opt.lightGray)
+	DrawLine(common.Point{common.Opt.PageMarginLeft, y + common.Opt.Spacing}, common.Point{common.Opt.PageMarginRight, y + common.Opt.Spacing}, common.Opt.lineWidth, common.Opt.lightGray)
+	DrawLine(common.Point{common.Opt.PageMarginLeft, y + common.Opt.Spacing*2}, common.Point{common.Opt.PageMarginRight, y + common.Opt.Spacing*2}, common.Opt.lineWidth, common.Opt.lightGray)
 	drawLadder(common.Opt.PageMarginLeft, y)
 
-	drawLine(point{common.Opt.PageMarginLeft, y + common.Opt.Spacing}, point{common.Opt.PageMarginRight, y + common.Opt.Spacing}, common.Opt.lineWidth, common.Opt.lightGray)
+	DrawLine(common.Point{common.Opt.PageMarginLeft, y + common.Opt.Spacing}, common.Point{common.Opt.PageMarginRight, y + common.Opt.Spacing}, common.Opt.lineWidth, common.Opt.lightGray)
 	y = y + (common.Opt.Spacing * 2)
-	drawLine(point{common.Opt.PageMarginLeft, y + common.Opt.Spacing}, point{common.Opt.PageMarginRight, y + common.Opt.Spacing}, common.Opt.lineWidth, common.Opt.lightGray)
-	drawLadder(common.Opt.PageMarginLeft, y)
-	y = y + (common.Opt.Spacing * 2)
-
-	drawLine(point{common.Opt.PageMarginLeft, y}, point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
-	drawLine(point{common.Opt.PageMarginLeft, y + common.Opt.Spacing}, point{common.Opt.PageMarginRight, y + common.Opt.Spacing}, common.Opt.lineWidth, common.Opt.lightGray)
+	DrawLine(common.Point{common.Opt.PageMarginLeft, y + common.Opt.Spacing}, common.Point{common.Opt.PageMarginRight, y + common.Opt.Spacing}, common.Opt.lineWidth, common.Opt.lightGray)
 	drawLadder(common.Opt.PageMarginLeft, y)
 	y = y + (common.Opt.Spacing * 2)
 
-	drawLine(point{common.Opt.PageMarginLeft, y}, point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
+	DrawLine(common.Point{common.Opt.PageMarginLeft, y}, common.Point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
+	DrawLine(common.Point{common.Opt.PageMarginLeft, y + common.Opt.Spacing}, common.Point{common.Opt.PageMarginRight, y + common.Opt.Spacing}, common.Opt.lineWidth, common.Opt.lightGray)
+	drawLadder(common.Opt.PageMarginLeft, y)
+	y = y + (common.Opt.Spacing * 2)
+
+	DrawLine(common.Point{common.Opt.PageMarginLeft, y}, common.Point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
 }
 
 func drawLadderLineGroup() {
@@ -103,7 +103,7 @@ func drawLadderLineGroup() {
 
 // 			switch racount {
 // 			case 0:
-// 				drawLine(point{common.Opt.PageMarginLeft, y}, point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
+// 				DrawLine(common.Point{common.Opt.PageMarginLeft, y}, common.Point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
 // 				drawLadder(common.Opt.PageMarginLeft, y)
 // 				/*
 // 					common.Opt.GC.SetFillColor(color.RGBA{0x44, 0x44, 0x44, 0xff})
@@ -121,7 +121,7 @@ func drawLadderLineGroup() {
 // 			case 1:
 // 				racount++
 // 			case 2:
-// 				drawLine(point{common.Opt.PageMarginLeft, y}, point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
+// 				DrawLine(common.Point{common.Opt.PageMarginLeft, y}, common.Point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
 // 				drawLadder(common.Opt.PageMarginLeft, y)
 // 				racount++
 // 			case 3:
@@ -132,13 +132,13 @@ func drawLadderLineGroup() {
 // 			case 5:
 // 				racount++
 // 			case 6:
-// 				drawLine(point{common.Opt.PageMarginLeft, y}, point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
+// 				DrawLine(common.Point{common.Opt.PageMarginLeft, y}, common.Point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
 // 				drawLadder(common.Opt.PageMarginLeft, y)
 // 				racount++
 // 			case 7:
 // 				racount++
 // 			case 8:
-// 				drawLine(point{common.Opt.PageMarginLeft, y}, point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
+// 				DrawLine(common.Point{common.Opt.PageMarginLeft, y}, common.Point{common.Opt.PageMarginRight, y}, common.Opt.lineWidth, common.Opt.darkBlack)
 // 				//drawLadder(common.Opt.PageMarginLeft, y)
 // 				//y = y + (common.Opt.Spacing * 3)
 // 				racount = 0
