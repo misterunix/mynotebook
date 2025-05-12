@@ -25,6 +25,7 @@ func main() {
 	flag.Float64Var(&common.Opt.Cursiveunits, "u", 5.0, "units for cursive grid, overrides spacing")
 	flag.Float64Var(&common.Opt.Angle, "a", 0.0, "angle in degrees offset of center mark")
 	flag.BoolVar(&common.Opt.Ladder, "l", false, "for blackletter 2/4/2/4")
+	flag.BoolVar(&common.Opt.Dark, "dark", false, "dark lines")
 	flag.Parse()
 
 	common.Opt.LRmargin = 12.7
@@ -91,7 +92,11 @@ func main() {
 	}
 
 	common.Opt.DarkBlack = color.RGBA{R: 0x00, G: 0x00, B: 0x00, A: 0xff}
-	common.Opt.LightGray = color.RGBA{R: 0xaa, G: 0xaa, B: 0xaa, A: 0xff}
+	if common.Opt.Dark {
+		common.Opt.LightGray = color.RGBA{R: 0x00, G: 0x00, B: 0x00, A: 0xff}
+	} else {
+		common.Opt.LightGray = color.RGBA{R: 0xaa, G: 0xaa, B: 0xaa, A: 0xff}
+	}
 
 	os.Mkdir("pdf", 0755)
 	// if common.Opt.dot {
@@ -121,7 +126,7 @@ func main() {
 	case 1:
 		pdf.DrawDots()
 	case 2:
-		pdf.Cursivegrid()
+		pdf.CursiveGrid()
 	default:
 		fmt.Println("Invalid style")
 		os.Exit(1)

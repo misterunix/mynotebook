@@ -1,7 +1,8 @@
 cmd/app/mynotebook/linux-amd64/*
+cmd/app/mynotebook/windows-amd64/*
 pdftests/*
 
-
+*.pdf
 *.svg
 
 !*.md

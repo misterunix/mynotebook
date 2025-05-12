@@ -41,6 +41,7 @@ type options struct {
 	File             *os.File
 	DarkBlack        color.RGBA
 	LightGray        color.RGBA
+	Dark             bool // All line are dark
 }
 
 var Opt options

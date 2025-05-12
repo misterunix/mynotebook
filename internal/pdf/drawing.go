@@ -35,7 +35,9 @@ func DrawLines() {
 
 	if common.Opt.Centermark {
 		for y := common.Opt.PageMarginTop + common.Opt.CenterSpaceing; y <= common.Opt.PageMarginBottom; y += common.Opt.Spacing {
-			DrawLine(common.Point{common.Opt.PageMarginLeft, y}, common.Point{common.Opt.PageMarginRight, Y}, common.Opt.LineWidth, common.Opt.LightGray)
+			DrawLine(common.Point{X: common.Opt.PageMarginLeft, Y: y},
+				common.Point{X: common.Opt.PageMarginRight, Y: y},
+				common.Opt.LineWidth, common.Opt.LightGray)
 		}
 	}
 
@@ -116,7 +118,7 @@ func DrawDots() {
 
 	for y := common.Opt.PageMarginTop; y <= common.Opt.PageMarginBottom; y += common.Opt.Spacing {
 		for x := common.Opt.PageMarginLeft; x <= common.Opt.PageMarginRight; x += common.Opt.Spacing {
-			drawDot(common.Point{X, Y}, 0.15, common.Opt.LineWidth, common.Opt.DarkBlack)
+			drawDot(common.Point{X: x, Y: y}, 0.15, common.Opt.LineWidth, common.Opt.DarkBlack)
 		}
 		//drawLine(common.Point{common.Opt.PageMarginLeft, y}, common.Point{common.Opt.PageMarginRight, y}, common.Opt.LineWidth, common.Opt.DarkBlack)
 	}
@@ -126,7 +128,7 @@ func DrawDots() {
 			for x := common.Opt.PageMarginLeft + common.Opt.CenterSpaceing; x <= common.Opt.PageMarginRight; x += common.Opt.Spacing {
 				//angle := 0.0 //-12.0
 				s := math.Sin(common.Opt.Angle*math.Pi/180) * common.Opt.Spacing
-				drawDot(common.Point{x + s, y}, 0.15, common.Opt.LineWidth, common.Opt.LightGray)
+				drawDot(common.Point{X: x + s, Y: y}, 0.15, common.Opt.LineWidth, common.Opt.LightGray)
 			}
 		}
 	}
@@ -177,7 +179,7 @@ func DrawDots() {
 
 }
 
-func cursivegrid() {
+func CursiveGrid() {
 
 	common.Opt.Spacing = common.Opt.Cursiveunits
 	common.Opt.Filename = fmt.Sprintf("pdf/cursive-%s-%s-%f-center.pdf", common.Opt.PaperSize, common.Opt.PaperOrientation, common.Opt.Spacing)
